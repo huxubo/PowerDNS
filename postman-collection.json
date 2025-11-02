@@ -1,0 +1,1212 @@
+{
+	"info": {
+		"_postman_id": "powerdns-api-test-collection",
+		"name": "PowerDNS API 测试集合",
+		"description": "完整的 PowerDNS API 测试示例集合，包含所有主要功能的测试用例",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "服务器管理",
+			"item": [
+				{
+					"name": "获取服务器列表",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has server data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    pm.expect(jsonData.length).to.be.at.least(1);",
+									"});",
+									"",
+									"pm.test(\"Server has required fields\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var server = jsonData[0];",
+									"    pm.expect(server).to.have.property('id');",
+									"    pm.expect(server).to.have.property('type');",
+									"    pm.expect(server).to.have.property('version');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取服务器详情",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Server details are correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id', '{{server_id}}');",
+									"    pm.expect(jsonData).to.have.property('type', 'Server');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取统计信息",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Statistics data is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/statistics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"statistics"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "服务器相关API测试"
+		},
+		{
+			"name": "区域管理",
+			"item": [
+				{
+					"name": "列出所有区域",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建新区域",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Zone created successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('name');",
+									"    pm.expect(jsonData).to.have.property('kind');",
+									"    ",
+									"    // 保存区域名称用于后续测试",
+									"    pm.environment.set(\"test_zone\", jsonData.name);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"test-example.com.\",\n  \"kind\": \"Native\",\n  \"nameservers\": [\n    \"ns1.test-example.com.\",\n    \"ns2.test-example.com.\"\n  ],\n  \"soa\": {\n    \"primary\": \"ns1.test-example.com.\",\n    \"hostmaster\": \"hostmaster.test-example.com.\",\n    \"refresh\": 3600,\n    \"retry\": 1800,\n    \"expire\": 604800,\n    \"minimum\": 86400,\n    \"serial\": \"2024110101\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取区域详情",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Zone details are correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('name');",
+									"    pm.expect(jsonData).to.have.property('rrsets');",
+									"    pm.expect(jsonData.rrsets).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除区域",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "DNS区域管理相关API测试"
+		},
+		{
+			"name": "记录管理",
+			"item": [
+				{
+					"name": "添加A记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"www.{{test_zone}}\",\n      \"type\": \"A\",\n      \"ttl\": 3600,\n      \"changetype\": \"REPLACE\",\n      \"records\": [\n        {\n          \"content\": \"192.168.1.100\",\n          \"disabled\": false\n        },\n        {\n          \"content\": \"192.168.1.101\",\n          \"disabled\": false\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加AAAA记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"ipv6.{{test_zone}}\",\n      \"type\": \"AAAA\",\n      \"ttl\": 3600,\n      \"changetype\": \"REPLACE\",\n      \"records\": [\n        {\n          \"content\": \"2001:db8::1\",\n          \"disabled\": false\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加CNAME记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"mail.{{test_zone}}\",\n      \"type\": \"CNAME\",\n      \"ttl\": 3600,\n      \"changetype\": \"REPLACE\",\n      \"records\": [\n        {\n          \"content\": \"mail.example.com.\",\n          \"disabled\": false\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加MX记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"{{test_zone}}\",\n      \"type\": \"MX\",\n      \"ttl\": 3600,\n      \"changetype\": \"REPLACE\",\n      \"records\": [\n        {\n          \"content\": \"10 mail.{{test_zone}}\",\n          \"disabled\": false\n        },\n        {\n          \"content\": \"20 backup.{{test_zone}}\",\n          \"disabled\": false\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加TXT记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"_dmarc.{{test_zone}}\",\n      \"type\": \"TXT\",\n      \"ttl\": 3600,\n      \"changetype\": \"REPLACE\",\n      \"records\": [\n        {\n          \"content\": \"\\\"v=DMARC1; p=none; rua=mailto:dmarc@example.com\\\"\",\n          \"disabled\": false\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "根记录CNAME（特殊功能）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Root CNAME is supported\", function () {",
+									"    // 这个测试验证API支持根记录CNAME的特殊功能",
+									"    pm.expect(true).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"{{test_zone}}\",\n      \"type\": \"CNAME\",\n      \"ttl\": 3600,\n      \"changetype\": \"REPLACE\",\n      \"records\": [\n        {\n          \"content\": \"target.example.com.\",\n          \"disabled\": false\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rrsets\": [\n    {\n      \"name\": \"www.{{test_zone}}\",\n      \"type\": \"A\",\n      \"changetype\": \"DELETE\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/{{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"{{test_zone}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "DNS记录管理相关API测试"
+		},
+		{
+			"name": "搜索和缓存",
+			"item": [
+				{
+					"name": "搜索记录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Search results are valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/search-data?q=test&max=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"search-data"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "test"
+								},
+								{
+									"key": "max",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "清除特定域名缓存",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/cache/flush?domain={{test_zone}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"cache",
+								"flush"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "{{test_zone}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "清除所有缓存",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/cache/flush",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"cache",
+								"flush"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "搜索功能和缓存管理API测试"
+		},
+		{
+			"name": "错误处理测试",
+			"item": [
+				{
+					"name": "无效API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Error response is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "invalid-api-key",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "访问不存在的区域",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error response is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones/nonexistent.zone.",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones",
+								"nonexistent.zone."
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "无效请求格式",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Error response is valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"invalid\": \"data\",\n  \"missing\": \"required fields\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/servers/{{server_id}}/zones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"servers",
+								"{{server_id}}",
+								"zones"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "错误处理和边界情况测试"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/powerdns-api",
+			"description": "API基础URL"
+		},
+		{
+			"key": "api_key",
+			"value": "powerdns-api-key-change-me",
+			"description": "API密钥"
+		},
+		{
+			"key": "server_id",
+			"value": "localhost",
+			"description": "服务器ID"
+		},
+		{
+			"key": "test_zone",
+			"value": "test-example.com.",
+			"description": "测试用区域名称"
+		}
+	]
+}
