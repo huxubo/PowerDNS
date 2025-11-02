@@ -11,24 +11,7 @@
 - 数据库选择：MySQL
 - 网站根目录：例如 `/www/wwwroot/powerdns-api`
 
-### 2. 设置运行目录（重要！）
-
-这是最关键的一步，必须正确设置：
-
-1. 在宝塔面板找到您创建的网站
-2. 点击"设置"
-3. 找到"网站目录"设置
-4. **将"运行目录"设置为 `/public`**
-
-![设置运行目录](https://user-images.githubusercontent.com/example/baota-running-dir.png)
-
-**具体操作：**
-- 运行目录：选择 `/public`（或在下拉框中手动输入 `public`）
-- 保存设置
-
-如果不设置运行目录，访问网站会显示目录列表或 404 错误。
-
-### 3. 配置伪静态（URL 重写）
+### 2. 配置伪静态（URL 重写）
 
 #### 如果使用 Nginx（推荐）
 
@@ -68,9 +51,9 @@ location ~ /config/ {
 
 项目已包含 `.htaccess` 文件，无需额外配置。确保启用了 `mod_rewrite` 模块。
 
-### 4. 配置数据库
+### 3. 配置数据库
 
-#### 4.1 创建数据库
+#### 3.1 创建数据库
 
 在宝塔面板中：
 1. 点击"数据库"
@@ -81,7 +64,7 @@ location ~ /config/ {
    - 密码：使用宝塔生成的强密码
 4. 点击"提交"
 
-#### 4.2 导入数据库架构
+#### 3.2 导入数据库架构
 
 1. 在数据库列表中，找到 `powerdns` 数据库
 2. 点击"管理" → "导入"
@@ -95,9 +78,9 @@ cd /www/wwwroot/powerdns-api
 mysql -u powerdns -p powerdns < database/schema.sql
 ```
 
-### 5. 配置 API
+### 4. 配置 API
 
-#### 5.1 创建配置文件
+#### 4.1 创建配置文件
 
 在项目根目录下执行：
 
@@ -111,7 +94,7 @@ cp config/config.example.php config/config.php
 2. 复制 `config.example.php`
 3. 将副本重命名为 `config.php`
 
-#### 5.2 编辑配置文件
+#### 4.2 编辑配置文件
 
 编辑 `config/config.php`：
 
@@ -141,7 +124,7 @@ openssl rand -hex 32
 
 或使用在线工具生成 64 位随机字符串。
 
-### 6. 设置文件权限
+### 5. 设置文件权限
 
 在宝塔终端中执行：
 
@@ -160,7 +143,7 @@ chown www:www logs
 chmod 755 logs
 ```
 
-### 7. 安装 PHP 扩展
+### 6. 安装 PHP 扩展
 
 确保安装了以下 PHP 扩展：
 
@@ -172,9 +155,9 @@ chmod 755 logs
    - ✅ opcache（可选，提升性能）
    - ✅ mbstring（通常已安装）
 
-### 8. 测试部署
+### 7. 测试部署
 
-#### 8.1 访问首页
+#### 7.1 访问首页
 
 在浏览器中访问：`http://你的域名/` 或 `http://服务器IP/`
 
@@ -191,7 +174,7 @@ chmod 755 logs
 }
 ```
 
-#### 8.2 测试 API
+#### 7.2 测试 API
 
 使用 curl 或 Postman 测试：
 
@@ -215,27 +198,18 @@ curl -H "X-API-Key: 你的API密钥" http://你的域名/api/v1/servers
 
 ## 常见问题排查
 
-### 问题 1：访问显示 404 Not Found
-
-**原因**：运行目录未设置为 `/public`
-
-**解决方案**：
-1. 进入网站设置 → 网站目录
-2. 将运行目录改为 `/public`
-3. 保存并刷新页面
-
-### 问题 2：访问显示目录列表或空白页
+### 问题 1：访问显示 404 Not Found 或目录列表
 
 **原因**：
-- 运行目录设置错误
-- 或 index.php 文件不存在
+- 伪静态配置未生效
+- index.php 文件不存在
 
 **解决方案**：
-1. 确认运行目录为 `/public`
-2. 检查 `/www/wwwroot/你的项目/public/index.php` 文件是否存在
-3. 检查文件权限：`ls -la public/index.php`
+1. 确认已配置伪静态规则（Nginx 或 Apache）
+2. 检查 `/www/wwwroot/你的项目/index.php` 文件是否存在
+3. 检查文件权限：`ls -la index.php`
 
-### 问题 3：500 Internal Server Error
+### 问题 2：500 Internal Server Error
 
 **原因**：
 - PHP 错误
@@ -254,12 +228,12 @@ curl -H "X-API-Key: 你的API密钥" http://你的域名/api/v1/servers
    - PHP 扩展缺失：安装必需的扩展
 
 3. 开启 PHP 错误显示（调试用，生产环境不要开启）：
-   编辑 `public/index.php`，第 10 行改为：
+   编辑 `index.php`，第 10 行改为：
    ```php
    ini_set('display_errors', '1');
    ```
 
-### 问题 4：API 返回 401 Unauthorized
+### 问题 3：API 返回 401 Unauthorized
 
 **原因**：
 - API Key 错误
@@ -272,7 +246,7 @@ curl -H "X-API-Key: 你的API密钥" http://你的域名/api/v1/servers
    X-API-Key: 你的API密钥
    ```
 
-### 问题 5：HTTPS 证书问题
+### 问题 4：HTTPS 证书问题
 
 **解决方案**：
 1. 在宝塔面板中，进入网站设置
@@ -281,7 +255,7 @@ curl -H "X-API-Key: 你的API密钥" http://你的域名/api/v1/servers
 4. 点击"申请"
 5. 开启"强制 HTTPS"
 
-### 问题 6：跨域 CORS 问题
+### 问题 5：跨域 CORS 问题
 
 如果前端调用 API 出现跨域错误：
 
@@ -404,7 +378,6 @@ tail -f /www/server/panel/logs/error.log
 ## 附录：完整部署检查清单
 
 - [ ] 创建网站
-- [ ] 设置运行目录为 `/public`
 - [ ] 配置伪静态规则
 - [ ] 创建数据库
 - [ ] 导入数据库架构

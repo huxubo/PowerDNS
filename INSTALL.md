@@ -59,7 +59,7 @@ sudo tee /etc/nginx/sites-available/powerdns-api > /dev/null << 'NGINX'
 server {
     listen 80;
     server_name localhost;
-    root /var/www/powerdns-api/public;
+    root /var/www/powerdns-api;
     index index.php;
     
     location / {
@@ -223,7 +223,7 @@ sudo nano /etc/nginx/sites-available/powerdns-api
 server {
     listen 80;
     server_name api.yourdomain.com;
-    root /var/www/powerdns-api/public;
+    root /var/www/powerdns-api;
     index index.php;
     
     access_log /var/log/nginx/powerdns-api-access.log;
@@ -266,9 +266,9 @@ sudo nano /etc/apache2/sites-available/powerdns-api.conf
 ```apache
 <VirtualHost *:80>
     ServerName api.yourdomain.com
-    DocumentRoot /var/www/powerdns-api/public
+    DocumentRoot /var/www/powerdns-api
     
-    <Directory /var/www/powerdns-api/public>
+    <Directory /var/www/powerdns-api>
         Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
@@ -426,7 +426,7 @@ sudo tail -f /var/log/php8.0-fpm/error.log
 **解决**：
 ```bash
 # 检查权限
-ls -la /var/www/powerdns-api/public
+ls -la /var/www/powerdns-api
 
 # 重新设置权限
 sudo chown -R www-data:www-data /var/www/powerdns-api

@@ -11,7 +11,6 @@
 如果您使用宝塔面板，请查看 **[宝塔面板部署指南](BAOTA_DEPLOY.md)** 获取详细的部署步骤。
 
 **关键配置：**
-- ⚠️ **运行目录必须设置为 `/public`**
 - 需要配置 Nginx 伪静态规则
 - 需要创建 `config/config.php` 配置文件
 
@@ -98,9 +97,9 @@ return [
 ```apache
 <VirtualHost *:80>
     ServerName api.powerdns.local
-    DocumentRoot /path/to/powerdns-api/public
+    DocumentRoot /path/to/powerdns-api
     
-    <Directory /path/to/powerdns-api/public>
+    <Directory /path/to/powerdns-api>
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
@@ -117,7 +116,7 @@ return [
 server {
     listen 80;
     server_name api.powerdns.local;
-    root /path/to/powerdns-api/public;
+    root /path/to/powerdns-api;
     index index.php;
     
     location / {
@@ -298,9 +297,6 @@ powerdns-api/
 │   └── config.example.php
 ├── database/            # 数据库相关
 │   └── schema.sql       # 数据库架构
-├── public/              # Web 根目录
-│   ├── .htaccess        # Apache 重写规则
-│   └── index.php        # 入口文件
 ├── src/                 # 源代码
 │   ├── api/             # API 控制器
 │   │   ├── ServerController.php
@@ -317,7 +313,9 @@ powerdns-api/
 │   └── utils/           # 工具类
 │       ├── Response.php
 │       └── Auth.php
+├── .htaccess            # Apache 重写规则
 ├── .gitignore
+├── index.php            # 入口文件
 └── README.md
 ```
 
