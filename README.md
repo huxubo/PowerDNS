@@ -4,6 +4,22 @@
 
 这是一个使用原生 PHP + MySQL 实现的 PowerDNS HTTP API 完整功能版本。该实现遵循 PowerDNS 官方 API 规范，并支持在根记录 (@) 添加 CNAME 记录。
 
+## 🚀 快速部署
+
+### 宝塔面板部署（推荐）
+
+如果您使用宝塔面板，请查看 **[宝塔面板部署指南](BAOTA_DEPLOY.md)** 获取详细的部署步骤。
+
+**关键配置：**
+- ⚠️ **运行目录必须设置为 `/public`**
+- 需要配置 Nginx 伪静态规则
+- 需要创建 `config/config.php` 配置文件
+
+### 其他部署方式
+
+- [详细安装指南](INSTALL.md) - 包含 Ubuntu/Debian/CentOS 等系统的安装步骤
+- [Docker 部署](INSTALL.md#docker-安装可选) - 使用 Docker 快速部署
+
 ## 主要特性
 
 - ✅ 完整实现 PowerDNS HTTP API 规范

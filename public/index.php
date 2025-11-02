@@ -39,7 +39,19 @@ use PowerDNS\Api\ZoneController;
 // 加载配置
 $configFile = __DIR__ . '/../config/config.php';
 if (!file_exists($configFile)) {
-    Response::serverError('配置文件不存在');
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(500);
+    echo json_encode([
+        'error' => '配置文件不存在',
+        'message' => '请先创建配置文件 config/config.php',
+        'instructions' => [
+            '1. 复制 config/config.example.php 为 config/config.php',
+            '2. 编辑 config/config.php 配置数据库和 API Key',
+            '3. 详细部署指南请查看: BAOTA_DEPLOY.md 或 INSTALL.md',
+        ],
+        'help' => '如使用宝塔面板，请查看项目根目录的 BAOTA_DEPLOY.md 文件'
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
 }
 $config = require $configFile;
 
