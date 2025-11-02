@@ -7,7 +7,7 @@ composer.lock
 .api-key
 
 # 日志文件
-/logs/
+/logs/*.log
 *.log
 
 # 临时文件

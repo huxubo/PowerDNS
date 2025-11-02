@@ -1,0 +1,8 @@
+# This file ensures the logs directory is tracked by Git
+# The directory is needed for API logging
+#
+# Permissions:
+# - This directory should be writable by the web server user (www, www-data, nginx, etc.)
+# - Run: chmod 755 logs && chown www:www logs (adjust user as needed)
+#
+# Log files will be created automatically when the API is running
