@@ -64,7 +64,7 @@ class Auth
     private function getApiKeyFromRequest(): ?string
     {
         // 从 X-API-Key 头获取
-        $headers = getallheaders();
+        $headers = $this->getAllHeaders();
         if (isset($headers['X-API-Key'])) {
             return $headers['X-API-Key'];
         }
@@ -82,6 +82,35 @@ class Auth
         }
         
         return null;
+    }
+    
+    /**
+     * 获取所有 HTTP 头信息（兼容不同 PHP 环境）
+     * 
+     * @return array
+     */
+    private function getAllHeaders(): array
+    {
+        // 如果 getallheaders() 函数存在（Apache 环境）
+        if (function_exists('getallheaders')) {
+            return getallheaders();
+        }
+        
+        // 对于 nginx + php-fpm 或其他环境的备用方案
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) === 'HTTP_') {
+                // 转换 HTTP_X_API_KEY 为 X-Api-Key
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$headerName] = $value;
+            } elseif (in_array($name, ['CONTENT_TYPE', 'CONTENT_LENGTH', 'CONTENT_MD5'])) {
+                // 处理特殊的头信息
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', $name))));
+                $headers[$headerName] = $value;
+            }
+        }
+        
+        return $headers;
     }
     
     /**
