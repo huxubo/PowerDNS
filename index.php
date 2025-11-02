@@ -5,30 +5,15 @@
  * 处理所有 API 请求的路由分发
  */
 
+// 加载自动加载器（必须在 use 语句之前）
+require_once __DIR__ . '/src/autoload.php';
+
 // 错误报告（生产环境中应关闭）
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
 // 设置时区
 date_default_timezone_set('Asia/Shanghai');
-
-// 自动加载类
-spl_autoload_register(function ($class) {
-    $prefix = 'PowerDNS\\';
-    $baseDir = __DIR__ . '/src/';
-    
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
-    }
-    
-    $relativeClass = substr($class, $len);
-    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-    
-    if (file_exists($file)) {
-        require $file;
-    }
-});
 
 use PowerDNS\Models\Database;
 use PowerDNS\Utils\Response;
