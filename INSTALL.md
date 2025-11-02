@@ -529,7 +529,6 @@ sudo nano /etc/monit/conf.d/powerdns-api
 安装完成后，请参考以下文档：
 
 - [API 使用指南](docs/API使用指南.md)
-- [CNAME 展平技术说明](docs/CNAME展平技术说明.md)
 - [部署指南](docs/部署指南.md)
 
 ## 获取帮助

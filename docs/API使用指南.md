@@ -5,7 +5,7 @@
 1. [快速开始](#快速开始)
 2. [认证](#认证)
 3. [API 端点](#api-端点)
-4. [CNAME 展平](#cname-展平)
+4. [根记录 CNAME 支持](#根记录-cname-支持)
 5. [错误处理](#错误处理)
 6. [示例](#示例)
 
@@ -243,15 +243,15 @@ PUT /api/v1/servers/localhost/cache/flush
 PUT /api/v1/servers/localhost/cache/flush?domain=example.com.
 ```
 
-## CNAME 展平
+## 根记录 CNAME 支持
 
-### 什么是 CNAME 展平？
+### 什么是根记录 CNAME？
 
-DNS 规范不允许在根记录（@）上使用 CNAME 记录。CNAME 展平技术通过自动追踪 CNAME 链并返回最终的 A/AAAA 记录来解决这个问题。
+DNS 规范不允许在根记录（@）上使用 CNAME 记录。但本 API 允许您直接添加根记录 CNAME。
 
 ### 工作原理
 
-1. 当在根记录上设置 CNAME 时：
+1. 在根记录上设置 CNAME：
    ```json
    {
      "rrsets": [
@@ -270,45 +270,38 @@ DNS 规范不允许在根记录（@）上使用 CNAME 记录。CNAME 展平技�
    }
    ```
 
-2. 系统会自动追踪 CNAME 链：
-   - `example.com.` → `target.example.com.` → `192.168.1.100`
+2. API 会按原样存储 CNAME 记录到数据库
 
-3. 查询时返回展平后的记录：
+3. 查询时返回原始的 CNAME 记录：
    ```json
    {
      "name": "example.com.",
-     "type": "A",
+     "type": "CNAME",
      "ttl": 3600,
      "records": [
        {
-         "content": "192.168.1.100",
+         "content": "target.example.com.",
          "disabled": false
        }
      ]
    }
    ```
 
-### 配置选项
+### 与官方 API 的区别
 
-在 `config/config.php` 中配置：
+| 特性 | 官方 PowerDNS API | 本实现 |
+|------|------------------|--------|
+| 根记录 CNAME | ❌ 不支持 | ✅ 支持 |
+| CNAME 展平 | ❌ 不支持 | 不在 API 层处理 |
+| 记录存储 | - | 按原样存储 |
 
-```php
-'cname_flattening' => [
-    'enabled' => true,           // 是否启用
-    'max_hops' => 10,            // 最大跳转次数
-    'cache_ttl' => 300,          // 缓存时间（秒）
-    'use_db_cache' => true,      // 使用数据库缓存
-    'use_memory_cache' => true,  // 使用内存缓存
-],
-```
+### 注意事项
 
-### 特性
-
-- ✅ 自动追踪多级 CNAME
-- ✅ 循环引用检测
-- ✅ 缓存机制（内存 + 数据库）
-- ✅ TTL 继承（使用链中最小值）
-- ✅ 支持 IPv4 (A) 和 IPv6 (AAAA)
+- API 不进行 CNAME 展平处理
+- 记录按原样存储和返回
+- CNAME 解析由 PowerDNS 服务端或其他组件处理
+- 支持多级 CNAME 链
+- 支持 IPv4 (A) 和 IPv6 (AAAA) 目标
 
 ## 错误处理
 
@@ -395,7 +388,7 @@ curl -X PATCH http://api.powerdns.local/api/v1/servers/localhost/zones/mydomain.
   }'
 ```
 
-#### 4. 使用 CNAME 展平（根记录）
+#### 4. 添加根记录 CNAME
 
 ```bash
 curl -X PATCH http://api.powerdns.local/api/v1/servers/localhost/zones/mydomain.com. \
@@ -415,6 +408,8 @@ curl -X PATCH http://api.powerdns.local/api/v1/servers/localhost/zones/mydomain.
     ]
   }'
 ```
+
+**注意**：本 API 支持在根记录添加 CNAME，记录会按原样存储和返回，不进行展平处理。
 
 #### 5. 查询区域信息
 

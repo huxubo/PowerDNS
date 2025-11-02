@@ -2,28 +2,27 @@
 
 ## 项目简介
 
-这是一个使用原生 PHP + MySQL 实现的 PowerDNS HTTP API 完整功能版本。该实现遵循 PowerDNS 官方 API 规范，并添加了根记录 CNAME 展平功能。
+这是一个使用原生 PHP + MySQL 实现的 PowerDNS HTTP API 完整功能版本。该实现遵循 PowerDNS 官方 API 规范，并支持在根记录 (@) 添加 CNAME 记录。
 
 ## 主要特性
 
 - ✅ 完整实现 PowerDNS HTTP API 规范
 - ✅ 原生 PHP 实现，无需框架依赖
 - ✅ MySQL 数据库支持
-- ✅ 根记录 (@) CNAME 展平功能
+- ✅ 支持根记录 (@) CNAME 记录
 - ✅ API Key 认证
 - ✅ RESTful 架构
 - ✅ JSON 格式响应
 - ✅ 完整的中文注释和文档
 
-## CNAME 展平功能
+## 根记录 CNAME 支持
 
-在 DNS 规范中，根记录 (@) 不允许使用 CNAME 记录。本实现通过 CNAME 展平技术解决了这个问题：
+本实现与官方 PowerDNS API 不同，支持在根记录 (@) 添加 CNAME 记录：
 
-- 当查询根记录的 CNAME 时，系统会自动追踪 CNAME 链
-- 解析到最终的 A/AAAA 记录
-- 返回实际的 IP 地址记录，而非 CNAME
-- 支持多级 CNAME 跳转
-- 自动检测循环引用
+- API 允许直接添加和修改根记录的 CNAME
+- 不在 API 层进行 CNAME 展平处理
+- 记录按原样存储和返回
+- CNAME 展平由 PowerDNS 服务端或其他组件处理
 
 ## 系统要求
 
@@ -209,7 +208,7 @@ Content-Type: application/json
 }
 ```
 
-**根记录 CNAME 展平示例**
+**根记录 CNAME 示例**
 
 ```bash
 PATCH /api/v1/servers/localhost/zones/example.com.
@@ -232,12 +231,12 @@ Content-Type: application/json
 }
 ```
 
-查询时会自动展平：
+查询时返回原始记录：
 ```bash
 GET /api/v1/servers/localhost/zones/example.com.
 ```
 
-系统会自动追踪 CNAME 并返回最终的 A/AAAA 记录。
+API 会返回存储的 CNAME 记录，不进行展平处理。
 
 #### 4. 搜索功能
 
@@ -308,15 +307,14 @@ powerdns-api/
 
 ## 开发说明
 
-### CNAME 展平实现原理
+### 根记录 CNAME 支持
 
-CNAME 展平服务 (`CnameFlatteningService.php`) 的工作流程：
+API 允许在根记录 (@) 添加 CNAME 记录：
 
-1. 检测到根记录 (@) 的 CNAME 查询
-2. 递归追踪 CNAME 链（最多 10 层，防止循环）
-3. 解析到最终的 A/AAAA 记录
-4. 返回实际 IP 地址记录
-5. 维护 TTL 值（取链中最小值）
+1. 不进行任何验证限制，允许添加根记录 CNAME
+2. 记录按原样存储到数据库
+3. 查询时返回原始 CNAME 记录，不进行展平
+4. CNAME 解析由 PowerDNS 服务端或其他组件处理
 
 ### 错误处理
 
@@ -380,9 +378,9 @@ curl -X POST -H "X-API-Key: your-api-key" \
 
 ## 常见问题
 
-### Q: CNAME 展平对性能有影响吗？
+### Q: 为什么支持根记录 CNAME？
 
-A: 有轻微影响，但已通过缓存优化。首次查询会追踪 CNAME 链，后续查询使用缓存结果。
+A: 官方 PowerDNS API 不支持在根记录添加 CNAME，但本实现允许这样做。CNAME 展平处理由 PowerDNS 服务端或其他组件负责，API 只负责存储和返回原始记录。
 
 ### Q: 支持 DNSSEC 吗？
 
@@ -414,5 +412,5 @@ MIT License
 
 - 初始版本发布
 - 实现完整的 PowerDNS API 功能
-- 添加根记录 CNAME 展平支持
+- 支持根记录 CNAME 添加
 - 提供中文文档和注释
