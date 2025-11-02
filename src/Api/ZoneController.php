@@ -219,6 +219,9 @@ class ZoneController
      */
     private function processRRsets(int $domainId, array $rrsets): void
     {
+        // 独占性记录类型集合（目前只包含CNAME）
+        $exclusiveEntryTypes = ['CNAME'];
+        
         foreach ($rrsets as $rrset) {
             $name = $rrset['name'];
             $type = $rrset['type'];
@@ -236,6 +239,37 @@ class ZoneController
                     break;
                     
                 case 'REPLACE':
+                    // 在添加新记录之前检查独占性冲突
+                    if (isset($rrset['records']) && !empty($rrset['records'])) {
+                        // 如果要添加的是独占性类型（如CNAME），检查是否存在其他类型的记录
+                        if (in_array($type, $exclusiveEntryTypes)) {
+                            $existingRecords = $this->recordModel->getByName($domainId, $name);
+                            foreach ($existingRecords as $existingRecord) {
+                                if ($existingRecord['type'] !== $type) {
+                                    // 发现冲突：CNAME不能与其他记录类型共存
+                                    Response::error(
+                                        "RRset {$name} IN {$type}: Conflicts with pre-existing RRset", 
+                                        422
+                                    );
+                                }
+                            }
+                        }
+                        
+                        // 如果要添加的不是独占性类型，检查是否存在独占性类型的记录
+                        if (!in_array($type, $exclusiveEntryTypes)) {
+                            $existingRecords = $this->recordModel->getByName($domainId, $name);
+                            foreach ($existingRecords as $existingRecord) {
+                                if (in_array($existingRecord['type'], $exclusiveEntryTypes)) {
+                                    // 发现冲突：其他记录类型不能与CNAME共存
+                                    Response::error(
+                                        "RRset {$name} IN {$type}: Conflicts with pre-existing RRset", 
+                                        422
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    
                     // 先删除旧记录
                     $this->recordModel->deleteByNameAndType($domainId, $name, $type);
                     
