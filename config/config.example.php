@@ -40,10 +40,11 @@ return [
         'server_version' => 'PHP-PowerDNS-API-1.0.0',
     ],
     
-    // CNAME 展平配置
+    // CNAME 展平配置（已废弃 - API 不再进行 CNAME 展平）
+    // 保留此配置以兼容旧版本，但不会被使用
     'cname_flattening' => [
         // 是否启用 CNAME 展平
-        'enabled' => true,
+        'enabled' => false,
         
         // 最大跳转次数（防止循环引用）
         'max_hops' => 10,
@@ -52,10 +53,10 @@ return [
         'cache_ttl' => 300,
         
         // 是否使用数据库缓存
-        'use_db_cache' => true,
+        'use_db_cache' => false,
         
         // 是否使用内存缓存
-        'use_memory_cache' => true,
+        'use_memory_cache' => false,
     ],
     
     // 日志配置

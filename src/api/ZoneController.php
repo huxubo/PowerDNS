@@ -10,7 +10,6 @@ namespace PowerDNS\Api;
 use PowerDNS\Models\Database;
 use PowerDNS\Models\Domain;
 use PowerDNS\Models\Record;
-use PowerDNS\Services\CnameFlatteningService;
 use PowerDNS\Utils\Response;
 
 class ZoneController
@@ -31,11 +30,6 @@ class ZoneController
     private $recordModel;
     
     /**
-     * CNAME 展平服务
-     */
-    private $cnameFlatteningService;
-    
-    /**
      * 配置
      */
     private $config;
@@ -52,7 +46,6 @@ class ZoneController
         $this->config = $config;
         $this->domainModel = new Domain($db);
         $this->recordModel = new Record($db);
-        $this->cnameFlatteningService = new CnameFlatteningService($db, $config);
     }
     
     /**
@@ -215,9 +208,6 @@ class ZoneController
         // 删除域名（记录会被级联删除）
         $this->domainModel->delete($domain['id']);
         
-        // 清除 CNAME 展平缓存
-        $this->cnameFlatteningService->clearCache($zoneId);
-        
         Response::noContent();
     }
     
@@ -338,10 +328,8 @@ class ZoneController
         if ($includeRecords) {
             $records = $this->recordModel->getByDomainId($domain['id']);
             
-            // 应用 CNAME 展平
-            if ($this->config['cname_flattening']['enabled']) {
-                $records = $this->cnameFlatteningService->flatten($records, $domain['name']);
-            }
+            // CNAME 展平不在 API 中处理
+            // 直接返回原始记录，包括顶端的 CNAME 记录
             
             // 格式化记录为 RRsets
             $zone['rrsets'] = $this->formatRecordsAsRRsets($records);
