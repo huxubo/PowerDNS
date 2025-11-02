@@ -32,12 +32,19 @@
 
 ## 根记录 CNAME 支持
 
-本实现与官方 PowerDNS API 不同，支持在根记录 (@) 添加 CNAME 记录：
+本实现完全遵循 PowerDNS 官方 API 规范，包括 CNAME 记录的独占性规则：
 
-- API 允许直接添加和修改根记录的 CNAME
-- 不在 API 层进行 CNAME 展平处理
-- 记录按原样存储和返回
-- CNAME 展平由 PowerDNS 服务端或其他组件处理
+### CNAME 独占性规则
+- **CNAME 记录不能与任何其他记录类型共存**，包括 A、AAAA、MX、TXT 等
+- 此规则适用于所有记录名称，**包括根记录 (@)**
+- 如果尝试在已存在 CNAME 记录的名称上添加其他类型记录，API 将返回 422 错误
+- 如果尝试在已存在其他记录的名称上添加 CNAME 记录，API 将返回 422 错误
+
+### 与官方 API 的兼容性
+- 完全实现官方 PowerDNS API 的 `exclusiveEntryTypes` 逻辑
+- 错误消息和状态码与官方 API 一致：`"RRset {name} IN {type}: Conflicts with pre-existing RRset"`
+- 支持在根记录 (@) 添加 CNAME 记录，但需确保该名称不存在其他类型记录
+- 不进行 CNAME 展平处理，记录按原样存储和返回
 
 ## 系统要求
 
@@ -246,6 +253,8 @@ Content-Type: application/json
 }
 ```
 
+**注意：** 如果 `example.com.` 已存在 A 或 AAAA 等其他类型记录，上述请求将返回 422 错误。
+
 查询时返回原始记录：
 ```bash
 GET /api/v1/servers/localhost/zones/example.com.
@@ -323,12 +332,13 @@ powerdns-api/
 
 ### 根记录 CNAME 支持
 
-API 允许在根记录 (@) 添加 CNAME 记录：
+API 完全遵循官方 PowerDNS 的 CNAME 独占性规则：
 
-1. 不进行任何验证限制，允许添加根记录 CNAME
-2. 记录按原样存储到数据库
-3. 查询时返回原始 CNAME 记录，不进行展平
-4. CNAME 解析由 PowerDNS 服务端或其他组件处理
+1. **独占性检查**：CNAME 记录不能与任何其他记录类型共存于同一名称
+2. **根记录支持**：允许在根记录 (@) 添加 CNAME，但需确保该名称没有其他类型记录
+3. **错误处理**：冲突时返回标准 422 状态码和官方格式的错误消息
+4. **存储方式**：记录按原样存储到数据库，不进行展平处理
+5. **查询返回**：查询时返回原始 CNAME 记录，不进行展平
 
 ### 错误处理
 
@@ -392,9 +402,16 @@ curl -X POST -H "X-API-Key: your-api-key" \
 
 ## 常见问题
 
-### Q: 为什么支持根记录 CNAME？
+### Q: CNAME 记录的独占性规则是什么？
 
-A: 官方 PowerDNS API 不支持在根记录添加 CNAME，但本实现允许这样做。CNAME 展平处理由 PowerDNS 服务端或其他组件负责，API 只负责存储和返回原始记录。
+A: 根据 PowerDNS 官方规范，CNAME 记录具有独占性：
+- 一个名称上只能有 CNAME 记录，不能同时存在 A、AAAA、MX、TXT 等其他类型记录
+- 此规则适用于所有名称，包括根记录 (@)
+- 违反规则时 API 返回 422 错误："RRset {name} IN {type}: Conflicts with pre-existing RRset"
+
+### Q: 支持根记录 CNAME 吗？
+
+A: 支持。本实现允许在根记录 (@) 添加 CNAME，但前提是该名称不存在其他类型记录。这与官方 PowerDNS API 逻辑完全一致。
 
 ### Q: 支持 DNSSEC 吗？
 

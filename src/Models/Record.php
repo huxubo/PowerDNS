@@ -74,6 +74,27 @@ class Record
     }
     
     /**
+     * 根据名称获取所有记录（所有类型）
+     * 
+     * @param int $domainId 域名 ID
+     * @param string $name 记录名称
+     * @return array
+     */
+    public function getByName(int $domainId, string $name): array
+    {
+        // 确保名称以点结尾
+        if (substr($name, -1) !== '.') {
+            $name .= '.';
+        }
+        
+        $sql = "SELECT * FROM records WHERE domain_id = :domain_id AND name = :name";
+        return $this->db->fetchAll($sql, [
+            ':domain_id' => $domainId,
+            ':name' => $name
+        ]);
+    }
+    
+    /**
      * 创建记录
      * 
      * @param array $data 记录数据
