@@ -1,289 +1,193 @@
 <?php
 /**
- * 部署引导页面
+ * PowerDNS API 入口文件
  * 
- * 如果您看到此页面，说明宝塔面板的运行目录配置不正确
+ * 处理所有 API 请求的路由分发
  */
 
-header('Content-Type: text/html; charset=utf-8');
-http_response_code(200);
-?>
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerDNS API - 部署配置提示</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        
-        .content {
-            padding: 30px;
-        }
-        
-        .alert {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-            border-radius: 4px;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            border-left-color: #dc3545;
-        }
-        
-        .alert h3 {
-            color: #856404;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-        
-        .alert-error h3 {
-            color: #721c24;
-        }
-        
-        .alert p {
-            color: #856404;
-            line-height: 1.6;
-        }
-        
-        .alert-error p {
-            color: #721c24;
-        }
-        
-        .steps {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-        
-        .steps h2 {
-            color: #333;
-            font-size: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .steps h2:before {
-            content: "🔧";
-            margin-right: 10px;
-            font-size: 24px;
-        }
-        
-        .step {
-            background: white;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 3px solid #667eea;
-        }
-        
-        .step:last-child {
-            margin-bottom: 0;
-        }
-        
-        .step h4 {
-            color: #667eea;
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-        
-        .step p {
-            color: #666;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-        
-        .step code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: "Courier New", monospace;
-            color: #d63384;
-            font-size: 13px;
-        }
-        
-        .highlight {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        
-        .highlight strong {
-            color: #0c5460;
-            font-size: 16px;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            padding: 15px 20px;
-            margin-top: 20px;
-            border-radius: 4px;
-        }
-        
-        .info-box p {
-            color: #0c5460;
-            margin: 5px 0;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 14px;
-            border-top: 1px solid #eee;
-        }
-        
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 24px;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>⚠️ PowerDNS API - 部署配置提示</h1>
-            <p>需要正确配置宝塔面板的运行目录</p>
-        </div>
-        
-        <div class="content">
-            <div class="alert alert-error">
-                <h3>❌ 运行目录配置错误</h3>
-                <p>当前访问的是项目根目录的 index.php 文件，这说明您的宝塔面板<strong>运行目录配置不正确</strong>。</p>
-                <p>正确的入口文件应该是 <code>public/index.php</code>，而不是根目录的 index.php。</p>
-            </div>
-            
-            <div class="steps">
-                <h2>快速修复步骤</h2>
-                
-                <div class="step">
-                    <h4>步骤 1：打开网站设置</h4>
-                    <p>在宝塔面板中，找到您的网站，点击<strong>「设置」</strong>按钮</p>
-                </div>
-                
-                <div class="step">
-                    <h4>步骤 2：修改网站目录</h4>
-                    <p>在设置页面中，点击<strong>「网站目录」</strong>选项卡</p>
-                </div>
-                
-                <div class="step">
-                    <h4>步骤 3：设置运行目录</h4>
-                    <p>找到<strong>「运行目录」</strong>设置项，在下拉框中选择 <code>/public</code> 或手动输入 <code>public</code></p>
-                </div>
-                
-                <div class="step">
-                    <h4>步骤 4：保存并刷新</h4>
-                    <p>点击<strong>「保存」</strong>按钮，然后刷新此页面</p>
-                </div>
-            </div>
-            
-            <div class="highlight">
-                <strong>💡 提示：</strong> 设置运行目录后，网站的根目录将自动指向 <code>项目路径/public</code> 目录，这样才能正确访问 API。
-            </div>
-            
-            <div class="info-box">
-                <p><strong>📚 更多部署信息：</strong></p>
-                <p>• 查看项目中的 <code>BAOTA_DEPLOY.md</code> 文件获取完整部署指南</p>
-                <p>• 查看 <code>README.md</code> 了解项目功能和 API 使用说明</p>
-                <p>• 查看 <code>INSTALL.md</code> 了解其他部署方式</p>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="javascript:location.reload();" class="btn">🔄 刷新页面</a>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p>PowerDNS API - PHP Implementation v1.0.0</p>
-            <p>如有问题，请查看项目文档或提交 Issue</p>
-        </div>
-    </div>
+// 错误报告（生产环境中应关闭）
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+
+// 设置时区
+date_default_timezone_set('Asia/Shanghai');
+
+// 自动加载类
+spl_autoload_register(function ($class) {
+    $prefix = 'PowerDNS\\';
+    $baseDir = __DIR__ . '/src/';
     
-    <script>
-        // 每 5 秒检查一次是否配置正确
-        setInterval(function() {
-            fetch('/api/v1/servers', {
-                method: 'HEAD'
-            }).then(function(response) {
-                if (response.status === 401 || response.status === 200) {
-                    // 配置正确了，自动跳转
-                    window.location.href = '/';
-                }
-            }).catch(function() {
-                // 继续等待
-            });
-        }, 5000);
-    </script>
-</body>
-</html>
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+    
+    $relativeClass = substr($class, $len);
+    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+    
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+use PowerDNS\Models\Database;
+use PowerDNS\Utils\Response;
+use PowerDNS\Utils\Auth;
+use PowerDNS\Api\ServerController;
+use PowerDNS\Api\ZoneController;
+
+// 加载配置
+$configFile = __DIR__ . '/config/config.php';
+if (!file_exists($configFile)) {
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(500);
+    echo json_encode([
+        'error' => '配置文件不存在',
+        'message' => '请先创建配置文件 config/config.php',
+        'instructions' => [
+            '1. 复制 config/config.example.php 为 config/config.php',
+            '2. 编辑 config/config.php 配置数据库和 API Key',
+            '3. 详细部署指南请查看: BAOTA_DEPLOY.md 或 INSTALL.md',
+        ],
+        'help' => '如使用宝塔面板，请查看项目根目录的 BAOTA_DEPLOY.md 文件'
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
+$config = require $configFile;
+
+// 设置 CORS 头
+if ($config['security']['cors_enabled']) {
+    Response::setCorsHeaders($config['security']);
+}
+
+// 初始化数据库
+try {
+    $db = Database::getInstance($config['database']);
+} catch (Exception $e) {
+    error_log('数据库初始化失败: ' . $e->getMessage());
+    Response::serverError('数据库连接失败');
+}
+
+// 认证
+$auth = new Auth($db, $config);
+
+// 检查 IP 白名单
+if (!$auth->checkIpWhitelist()) {
+    Response::unauthorized('IP 地址不在白名单中');
+}
+
+// 验证 API Key
+if (!$auth->authenticate()) {
+    Response::unauthorized('无效的 API Key');
+}
+
+// 解析请求
+$method = $_SERVER['REQUEST_METHOD'];
+$uri = $_SERVER['REQUEST_URI'];
+$parsedUrl = parse_url($uri);
+$path = $parsedUrl['path'];
+
+// 移除查询字符串并标准化路径
+$path = rtrim($path, '/');
+
+// 路由匹配
+try {
+    // API 版本
+    $apiVersion = $config['api']['version'];
+    
+    // 匹配路由
+    if (preg_match("#^/api/{$apiVersion}/servers$#", $path)) {
+        // GET /api/v1/servers
+        if ($method === 'GET') {
+            $controller = new ServerController($db, $config);
+            $controller->listServers();
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)$#", $path, $matches)) {
+        // GET /api/v1/servers/:server_id
+        $serverId = $matches[1];
+        if ($method === 'GET') {
+            $controller = new ServerController($db, $config);
+            $controller->getServer($serverId);
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)/statistics$#", $path, $matches)) {
+        // GET /api/v1/servers/:server_id/statistics
+        $serverId = $matches[1];
+        if ($method === 'GET') {
+            $controller = new ServerController($db, $config);
+            $controller->getStatistics($serverId);
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)/config$#", $path, $matches)) {
+        // GET /api/v1/servers/:server_id/config
+        $serverId = $matches[1];
+        if ($method === 'GET') {
+            $controller = new ServerController($db, $config);
+            $controller->getConfig($serverId);
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)/search-data$#", $path, $matches)) {
+        // GET /api/v1/servers/:server_id/search-data
+        $serverId = $matches[1];
+        if ($method === 'GET') {
+            $query = $_GET['q'] ?? '';
+            $max = (int)($_GET['max'] ?? 100);
+            $controller = new ServerController($db, $config);
+            $controller->search($serverId, $query, $max);
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)/cache/flush$#", $path, $matches)) {
+        // PUT /api/v1/servers/:server_id/cache/flush
+        $serverId = $matches[1];
+        if ($method === 'PUT') {
+            $domain = $_GET['domain'] ?? null;
+            $controller = new ServerController($db, $config);
+            $controller->flushCache($serverId, $domain);
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)/zones$#", $path, $matches)) {
+        // GET /api/v1/servers/:server_id/zones (列出区域)
+        // POST /api/v1/servers/:server_id/zones (创建区域)
+        $serverId = $matches[1];
+        $controller = new ZoneController($db, $config);
+        
+        if ($method === 'GET') {
+            $controller->listZones($serverId);
+        } elseif ($method === 'POST') {
+            $controller->createZone($serverId);
+        }
+    } elseif (preg_match("#^/api/{$apiVersion}/servers/([^/]+)/zones/([^/]+)$#", $path, $matches)) {
+        // GET /api/v1/servers/:server_id/zones/:zone_id (获取区域)
+        // PATCH /api/v1/servers/:server_id/zones/:zone_id (更新区域)
+        // DELETE /api/v1/servers/:server_id/zones/:zone_id (删除区域)
+        $serverId = $matches[1];
+        $zoneId = urldecode($matches[2]);
+        $controller = new ZoneController($db, $config);
+        
+        if ($method === 'GET') {
+            $controller->getZone($serverId, $zoneId);
+        } elseif ($method === 'PATCH') {
+            $controller->updateZone($serverId, $zoneId);
+        } elseif ($method === 'DELETE') {
+            $controller->deleteZone($serverId, $zoneId);
+        }
+    } elseif ($path === '/' || $path === '') {
+        // API 根路径
+        Response::success([
+            'message' => 'PowerDNS API - PHP Implementation',
+            'version' => $config['api']['server_version'],
+            'endpoints' => [
+                'servers' => "/api/{$apiVersion}/servers",
+                'documentation' => 'https://doc.powerdns.com/authoritative/http-api/',
+            ],
+        ]);
+    } else {
+        // 未找到路由
+        Response::notFound('API 端点不存在');
+    }
+    
+} catch (Exception $e) {
+    // 捕获所有异常
+    error_log('API 错误: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+    
+    if ($config['debug']) {
+        Response::serverError('服务器错误: ' . $e->getMessage());
+    } else {
+        Response::serverError('服务器内部错误');
+    }
+}

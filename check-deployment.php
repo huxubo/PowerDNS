@@ -98,7 +98,6 @@ class DeploymentChecker
         $dirs = [
             'config' => '配置目录',
             'database' => '数据库目录',
-            'public' => 'Web 根目录',
             'src' => '源代码目录',
             'src/api' => 'API 控制器目录',
             'src/models' => '模型目录',
@@ -129,8 +128,8 @@ class DeploymentChecker
         $this->output("\n检查关键文件...\n", 'section');
         
         $files = [
-            'public/index.php' => 'API 入口文件',
-            'public/.htaccess' => 'Apache 重写规则',
+            'index.php' => 'API 入口文件',
+            '.htaccess' => 'Apache 重写规则',
             'database/schema.sql' => '数据库架构文件',
             'README.md' => '项目说明',
             'BAOTA_DEPLOY.md' => '宝塔部署指南',
@@ -150,11 +149,11 @@ class DeploymentChecker
     {
         $this->output("\n检查文件权限...\n", 'section');
         
-        $publicIndex = __DIR__ . '/public/index.php';
-        if (is_readable($publicIndex)) {
-            $this->success("public/index.php 可读 ✓");
+        $indexFile = __DIR__ . '/index.php';
+        if (is_readable($indexFile)) {
+            $this->success("index.php 可读 ✓");
         } else {
-            $this->error("public/index.php 不可读");
+            $this->error("index.php 不可读");
         }
 
         $logsDir = __DIR__ . '/logs';
@@ -280,15 +279,9 @@ class DeploymentChecker
         $this->output("\n检查 Web 服务器...\n", 'section');
         
         if (!$this->isCli) {
-            // 检查是否从正确的目录访问
-            $scriptPath = $_SERVER['SCRIPT_FILENAME'] ?? '';
+            // 检查文档根目录
             $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
-            
-            if (strpos($scriptPath, '/public/') !== false || strpos($docRoot, '/public') !== false) {
-                $this->success("运行目录配置正确 (public) ✓");
-            } else {
-                $this->error("运行目录配置错误，请将运行目录设置为 /public");
-            }
+            $this->success("文档根目录: {$docRoot}");
 
             // 检查 URL 重写
             if (isset($_SERVER['REQUEST_URI'])) {
