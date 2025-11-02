@@ -51,13 +51,23 @@ class Domain
      */
     public function getByName(string $name): ?array
     {
-        // 确保域名以点结尾
-        if (substr($name, -1) !== '.') {
-            $name .= '.';
+        // 尝试原始名称
+        $sql = "SELECT * FROM domains WHERE name = :name";
+        $result = $this->db->fetchOne($sql, [':name' => $name]);
+        
+        // 如果没找到，尝试添加尾部点
+        if (!$result && substr($name, -1) !== '.') {
+            $nameWithDot = $name . '.';
+            $result = $this->db->fetchOne($sql, [':name' => $nameWithDot]);
         }
         
-        $sql = "SELECT * FROM domains WHERE name = :name";
-        return $this->db->fetchOne($sql, [':name' => $name]);
+        // 如果还没找到且名称有点，尝试去掉点
+        if (!$result && substr($name, -1) === '.') {
+            $nameWithoutDot = rtrim($name, '.');
+            $result = $this->db->fetchOne($sql, [':name' => $nameWithoutDot]);
+        }
+        
+        return $result;
     }
     
     /**
@@ -124,12 +134,13 @@ class Domain
      */
     public function deleteByName(string $name): int
     {
-        // 确保域名以点结尾
-        if (substr($name, -1) !== '.') {
-            $name .= '.';
+        // 首先尝试找到域名
+        $domain = $this->getByName($name);
+        if (!$domain) {
+            return 0;
         }
         
-        return $this->db->delete('domains', ['name' => $name]);
+        return $this->db->delete('domains', ['name' => $domain['name']]);
     }
     
     /**

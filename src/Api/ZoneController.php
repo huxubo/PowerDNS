@@ -306,9 +306,12 @@ class ZoneController
      */
     private function formatZone(array $domain, string $serverId, bool $includeRecords = false): array
     {
+        // 标准化域名（移除尾部点）
+        $normalizedName = rtrim($domain['name'], '.');
+        
         $zone = [
-            'id' => $domain['name'],
-            'name' => $domain['name'],
+            'id' => $normalizedName,
+            'name' => $normalizedName,
             'type' => 'Zone',
             'kind' => $domain['type'],
             'serial' => 0,
@@ -322,7 +325,7 @@ class ZoneController
             'soa_edit_api' => '',
             'api_rectify' => false,
             'account' => $domain['account'] ?? '',
-            'url' => "/api/{$this->config['api']['version']}/servers/{$serverId}/zones/{$domain['name']}",
+            'url' => "/api/{$this->config['api']['version']}/servers/{$serverId}/zones/{$normalizedName}",
         ];
         
         if ($includeRecords) {
