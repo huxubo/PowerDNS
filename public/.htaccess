@@ -1,0 +1,26 @@
+# PowerDNS API - Apache 重写规则
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # 重定向到 index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# 禁止访问隐藏文件
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 设置字符集
+AddDefaultCharset UTF-8
+
+# 启用 CORS（如果需要）
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, X-API-Key, Authorization"
+</IfModule>
